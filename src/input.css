@@ -1,1 +1,11 @@
 @import "tailwindcss";
+
+@theme{
+        --color-caput-mortuum: #5a2217;
+        --color-persian-red: #be3a38;
+        --color-burnt-sienna: #e6663b;
+        --color-earth-yellow: #e9b972;
+        --color-wheat: #ffeac6;
+        --color-zomp: #4da494;
+}
+
