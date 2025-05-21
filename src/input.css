@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+/* colores personalizados */
 @theme{
         --color-caput-mortuum: #5a2217;
         --color-persian-red: #be3a38;
