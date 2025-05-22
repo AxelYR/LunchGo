@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LunchGo</title>
     <!-- Declaracion de Tailwind instalado mediante CLI -->
     <link rel="stylesheet" href="./src/output.css">
-    <!-- Declaracion de AlpineJS para componentes -->
-    <script src="//unpkg.com/alpinejs" defer></script>
 </head>
+
 <body class="flex flex-col min-h-screen bg-wheat">
-<!-- 
+    <!-- 
     Encabezado principal del sitio web. Contiene la barra de navegación adaptativa 
     con enlaces y botón de menú móvil.
--->
+    -->
     <header class="sticky top-0">
         <!-- Navegación con color de fondo personalizado 'earth-yellow' -->
         <nav x-data="{ isOpen: false }" class="relative bg-earth-yellow shadow">
             <div class="container px-6 py-4 mx-auto md:flex md:justify-between md:items-center">
-                    
+
                 <!-- Sección izquierda: logo y botón móvil -->
                 <div class="flex items-center justify-between">
                     <!-- Logotipo -->
-                    <a href="#">
+                    <a href="./index.html">
                         <img class="w-auto h-6 sm:h-7" src="./media/img/Marca.webp" alt="Marca">
                     </a>
 
@@ -53,28 +53,54 @@
                     <!-- Enlaces de navegación -->
                     <div class="flex flex-col md:flex-row md:mx-6">
                         <a class="my-2 text-gray-800 hover:text-white transition-colors duration-300 md:mx-4 md:my-0"
-                            href="#">Inicio</a>
+                            href="index.html">Inicio</a>
                         <a class="my-2 text-gray-800 hover:text-white transition-colors duration-300 md:mx-4 md:my-0"
-                            href="#">Menú</a>
+                            href="menu.html">Menú</a>
                         <a class="my-2 text-gray-800 hover:text-white transition-colors duration-300 md:mx-4 md:my-0"
-                            href="#">Contacto</a>
+                            href="contacto.html">Contacto</a>
                         <a class="my-2 text-gray-800 hover:text-white transition-colors duration-300 md:mx-4 md:my-0"
-                            href="#">Nosotros</a>
+                            href="nosotros.html">Nosotros</a>
                     </div>
 
                     <!-- Botón de carrito o acción adicional -->
-                    <div class="flex justify-center md:block">
-                        <a class="relative text-gray-800 hover:text-white transition-colors duration-300" href="#"
+                    <!-- Contenedor AlpineJS para manejar el estado del dropdown -->
+                    <div x-data="{ openCart: false }" class="relative flex justify-center md:block">
+
+                        <!-- Botón de carrito -->
+                        <button @click="openCart = !openCart"
+                            class="relative text-gray-800 hover:text-white transition-colors duration-300 focus:outline-none"
                             aria-label="Carrito">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.707 15.293C4.077 15.923 4.523 17 5.414 17H17M17 17C15.895 17 15 17.895 15 19C15 20.105 15.895 21 17 21C18.105 21 19 20.105 19 19C19 17.895 18.105 17 17 17ZM9 19C9 20.105 8.105 21 7 21C5.895 21 5 20.105 5 19C5 17.895 5.895 17 7 17C8.105 17 9 17.895 9 19Z"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" />
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5 17H17M17 17C15.895 17 15 17.895 15 19C15 20.105 15.895 21 17 21C18.105 21 19 20.105 19 19C19 17.895 18.105 17 17 17ZM7 17C5.895 17 5 17.895 5 19C5 20.105 5.895 21 7 21C8.105 21 9 20.105 9 19C9 17.895 8.105 17 7 17Z" />
                             </svg>
-                            <span class="absolute top-0 left-0 p-1 text-xs text-white bg-red-500 rounded-full"></span>
-                        </a>
+
+                            <!-- Indicador de número de productos -->
+                            <span class="absolute top-0 left-0 bg-red-500 text-white text-xs rounded-full px-1">0</span>
+                        </button>
+
+                        <!-- Dropdown del carrito -->
+                        <div x-show="openCart" @click.away="openCart = false" x-transition
+                            class="absolute right-0 mt-2 w-64 bg-burnt-sienna rounded-lg shadow-lg z-50">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-white">Tu carrito</h3>
+                                <ul class="mt-2 space-y-2 text-sm text-white">
+                                    <li id="MensajeCarrito" class="flex justify-center">
+                                        Vacio!
+                                    </li>
+                                    <li id="TotalCarrito" class="flex justify-between">
+                                        <span>Total</span><span>$0</span>
+                                    </li>
+                                </ul>
+                                <div class="mt-4">
+                                    <a href="#"
+                                        class="block text-center bg-earth-yellow hover:bg-zomp text-white font-semibold py-2 rounded transition">Ir
+                                        al pago</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </nav>
@@ -86,26 +112,26 @@
 
 
     <!-- Footer fijo-->
-    <footer class="bg-zomp shadow-sm w-full px-4 md:px-8 py-6 text-white">
+    <footer class="bg-burnt-sienna shadow-sm w-full px-4 md:px-8 py-6 text-white">
         <div class="max-w-screen-xl mx-auto">
             <div class="sm:flex sm:items-center sm:justify-between">
-                <a href="#" class="flex items-center mb-4 sm:mb-0 space-x-3">
+                <a href="index.html" class="flex items-center mb-4 sm:mb-0 space-x-3">
                     <img src="./media/img/logoTrans.webp" class="h-6" alt="LunchGo Logo" />
                     <span class="self-center text-2xl font-semibold whitespace-nowrap">LunchGo</span>
                 </a>
                 <ul class="flex flex-wrap items-center text-sm font-medium">
-                    <li><a href="#" class="hover:underline me-4 md:me-6">Acerca de</a></li>
-                    <li><a href="#" class="hover:underline me-4 md:me-6">Privacidad</a></li>
-                    <li><a href="#" class="hover:underline me-4 md:me-6">Licencia</a></li>
-                    <li><a href="#" class="hover:underline">Contáctanos</a></li>
+                    <li><a href="privacidad" class="hover:underline me-4 md:me-6">Privacidad</a></li>
+                    <li><a href="licencia" class="hover:underline me-4 md:me-6">Licencia</a></li>
                 </ul>
             </div>
             <hr class="my-6 border-white/40" />
-            <span class="block text-sm text-center">© 2023 LunchGo™. Todos los derechos reservados.</span>
+            <span class="block text-sm text-center">© 2025 LunchGo™. Todos los derechos reservados.</span>
         </div>
     </footer>
 
 
 
 </body>
+        <!-- Declaracion de AlpineJS para componentes -->
+    <script src="//unpkg.com/alpinejs" defer></script>
 </html>
