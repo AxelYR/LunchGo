@@ -1,0 +1,20 @@
+[
+  {
+    "id": "item001",
+    "nombre": "Sprite",
+    "precio": 22,
+    "ruta_imagen": "https://arteli.vtexassets.com/arquivos/ids/201402-500-auto?v=638576437396100000&width=500&height=auto&aspect=true"
+  },
+  {
+    "id": "item002",
+    "nombre": "Coca cola",
+    "precio": 19,
+    "ruta_imagen": "https://arteli.vtexassets.com/arquivos/ids/201426-500-auto?v=638576437504200000&width=500&height=auto&aspect=true"
+  },
+  {
+    "id": "item003",
+    "nombre": "Fanta",
+    "precio": 20,
+    "ruta_imagen": "https://arteli.vtexassets.com/arquivos/ids/201398-500-auto?v=638576437384330000&width=500&height=auto&aspect=true"
+  }
+]
