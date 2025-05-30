@@ -1,11 +1,9 @@
-// app.js
-
 document.addEventListener('DOMContentLoaded', () => {
     const cardsContainer = document.getElementById('cards-container');
     const PRODUCTS_API_URL = 'http://localhost:9090/data'; // URL para obtener los productos de las tarjetas
     const CART_API_URL = 'http://localhost:9090/cart';   // URL para gestionar el carrito
 
-    //=funcion para obtener y mostrar los productos
+    //funcion para obtener y mostrar los productos
     async function fetchAndDisplayProducts() {
         try {
             const response = await fetch(PRODUCTS_API_URL);
@@ -56,23 +54,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const productData = JSON.parse(event.target.dataset.product); //obtiene los datos del producto
 
         try {
-            // Envía el producto al backend para que lo gestione en carrito.txt
+            // envía el producto al backend para que lo gestione en carrito.txt
             const response = await fetch(CART_API_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(productData) // Envía los datos del producto al servidor
+                body: JSON.stringify(productData) // envía los datos del producto al servidor
             });
 
             if (!response.ok) {
-                const errorData = await response.json(); // Intenta leer el mensaje de error del servidor
+                const errorData = await response.json(); // intenta leer el mensaje de error del servidor
                 throw new Error(`HTTP error! status: ${response.status}, message: ${errorData.error || 'Error desconocido'}`);
             }
 
             const result = await response.json();
             console.log('Respuesta del servidor al añadir al carrito:', result);
-            alert(`${productData.nombre} ha sido añadido al carrito.`); // Notificación simple
+            alert(`${productData.nombre} ha sido añadido al carrito.`); // notificacion simple
 
         } catch (error) {
             console.error('Error al añadir al carrito:', error);

@@ -1,5 +1,3 @@
-// routes.mjs
-
 import express from 'express'
 import fs from 'fs'
 
@@ -12,8 +10,7 @@ function escucha(app){
         return new Promise((resolve, reject) => {
             fs.readFile('datos.txt', 'utf8', (err, data) => {
                 if (err) {
-                    // Si el archivo no existe o hay un error, se asume un array vacío o se rechaza
-                    if (err.code === 'ENOENT') { // ENOENT significa "Error NO ENTry" (archivo no encontrado)
+                    if (err.code === 'ENOENT') {
                         console.warn('El archivo datos.txt no existe. Se inicializará como un array vacío.');
                         return resolve([]);
                     }
@@ -64,12 +61,12 @@ function escucha(app){
         try {
             let datos = await readDataFile();
             const newItem = {
-                id: Date.now().toString(), // Genera un ID único simple basado en la marca de tiempo
+                id: Date.now().toString(),
                 ...req.body
             };
             datos.push(newItem);
             await writeDataFile(datos);
-            res.status(201).json({ // 201 Created para POST exitoso
+            res.status(201).json({
                 'Peticion post ':'Satisfactoria',
                 'insertado': newItem
             });
@@ -128,14 +125,13 @@ function escucha(app){
         }
     });
 
-    //funciones y rutas para el carrito (carrito.txt)
+    // funciones y rutas para el carrito (carrito.txt) 
 
-    // Helper para leer el archivo del carrito
+    // helper para leer el archivo del carrito
     const readCartFile = () => {
         return new Promise((resolve, reject) => {
             fs.readFile('carrito.txt', 'utf8', (err, data) => {
                 if (err) {
-                    // Si el archivo no existe, devuelve un array vacío (carrito vacío)
                     if (err.code === 'ENOENT') {
                         console.warn('El archivo carrito.txt no existe. Se inicializará como un array vacío.');
                         return resolve([]);
@@ -164,7 +160,6 @@ function escucha(app){
         });
     };
 
-    // Ruta GET /cart para obtener el contenido actual del carrito
     router.get('/cart', async function(req, res, next){
         console.log('recibio peticion get en /cart');
         try {
@@ -176,30 +171,26 @@ function escucha(app){
         }
     });
 
-    // Ruta POST /cart para añadir o actualizar un producto en el carrito
     router.post('/cart', async function(req, res, next){
         console.log('recibio peticion post en /cart');
-        console.log('body: ', req.body); // Espera un objeto de producto (id, nombre, precio, ruta_imagen)
+        console.log('body: ', req.body);
 
         const productToAdd = req.body;
-        // Validación básica: asegura que el producto tenga un ID
         if (!productToAdd || !productToAdd.id) {
             return res.status(400).json({ error: 'Datos de producto inválidos. Se requiere un ID.' });
         }
 
         try {
-            let cart = await readCartFile(); // Lee el carrito actual
+            let cart = await readCartFile();
             const existingProductIndex = cart.findIndex(item => item.id === productToAdd.id);
 
             if (existingProductIndex > -1) {
-                // Si el producto ya está en el carrito, incrementa la cantidad
                 cart[existingProductIndex].cantidad = (cart[existingProductIndex].cantidad || 1) + 1;
             } else {
-                // Si no está, añade el producto con cantidad 1
                 cart.push({ ...productToAdd, cantidad: 1 });
             }
 
-            await writeCartFile(cart); // Guarda el carrito actualizado
+            await writeCartFile(cart);
             res.status(200).json({
                 'Peticion post carrito': 'Satisfactoria',
                 'carrito_actualizado': cart
@@ -210,30 +201,79 @@ function escucha(app){
         }
     });
 
-    //Ruta DELETE /cart/:id para eliminar un producto del carrito
-    router.delete('/cart/:id', async function(req, res, next){
-        const itemId = req.params.id;
-        console.log(`recibio peticion delete en /cart/${itemId}`);
+
+    // helper para leer el archivo de ordenes
+    const readOrdersFile = () => {
+        return new Promise((resolve, reject) => {
+            fs.readFile('ordenes.txt', 'utf8', (err, data) => {
+                if (err) {
+                    if (err.code === 'ENOENT') { // si el archivo no existe, devuelve un array vacio
+                        console.warn('El archivo ordenes.txt no existe. Se inicializará como un array vacío.');
+                        return resolve([]);
+                    }
+                    return reject(err);
+                }
+                try {
+                    const orders = JSON.parse(data);
+                    resolve(orders);
+                } catch (error) {
+                    reject(new Error('Error en el formato del archivo JSON de órdenes'));
+                }
+            });
+        });
+    };
+
+    // Helper para escribir en el archivo de ordenes
+    const writeOrdersFile = (orders) => {
+        return new Promise((resolve, reject) => {
+            fs.writeFile('ordenes.txt', JSON.stringify(orders, null, 2), (err) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve();
+            });
+        });
+    };
+
+    // ruta POST /order para procesar y guardar una orden
+    router.post('/order', async function(req, res, next){
+        console.log('recibio peticion POST en /order');
+        console.log('body de la orden: ', req.body);
+
+        const { customerInfo, cartItems, total } = req.body;
+
+        if (!customerInfo || !cartItems || !Array.isArray(cartItems) || cartItems.length === 0 || typeof total === 'undefined') {
+            return res.status(400).json({ error: 'Datos de la orden incompletos o inválidos.' });
+        }
 
         try {
-            let cart = await readCartFile();
-            const initialLength = cart.length;
-            cart = cart.filter(item => item.id !== itemId);
+            let orders = await readOrdersFile(); // lee las ordenes existentes
+            const newOrder = {
+                orderId: Date.now().toString(), // ID único para la orden
+                timestamp: new Date().toISOString(), // fecha y hora de la orden
+                customerInfo,
+                cartItems,
+                total
+            };
 
-            if (cart.length === initialLength) {
-                return res.status(404).json({ error: 'Producto no encontrado en el carrito para eliminar' });
-            }
+            orders.push(newOrder); // añade la nueva orden
+            await writeOrdersFile(orders); // guarda todas las órdenes
 
-            await writeCartFile(cart);
+            // vaciar el carrito.txt después de procesar la orden
+            await writeCartFile([]); // escribe un array vacío en carrito.txt
+
             res.status(200).json({
-                'Peticion delete carrito': 'Satisfactoria',
-                'id_eliminado_del_carrito': itemId
+                'Peticion POST orden': 'Satisfactoria',
+                'orden_creada': newOrder.orderId,
+                'mensaje': 'Pedido confirmado y carrito vaciado.'
             });
+
         } catch (error) {
-            console.error('Error al procesar DELETE para el carrito:', error.message);
-            res.status(500).json({ error: error.message || 'Error al procesar la solicitud DELETE del carrito' });
+            console.error('Error al procesar POST para la orden:', error.message);
+            res.status(500).json({ error: error.message || 'Error al procesar la solicitud de la orden' });
         }
     });
+
 }
 
 export default escucha
