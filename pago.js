@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const cartItemsContainer = document.getElementById('cart-items-container');
     const cartTotalElement = document.getElementById('cart-total');
     const paymentForm = document.querySelector('form'); // Selecciona el formulario de pago
-    const CART_API_URL = 'http://localhost:9090/cart';   // URL de tu API para el carrito
+    const CART_API_URL = 'http://localhost:9090/cart';   // URL API para el carrito
     const ORDER_API_URL = 'http://localhost:9090/order'; // URL para enviar la orden
 
     let currentCartItems = []; // Almacenar los items del carrito para usarlos al confirmar el pedido
